@@ -16,4 +16,4 @@ class LLMRequest(Base):
     status = Column(String(50), default="pending", comment="요청 상태")
     error_message = Column(Text, nullable=True, comment="에러 메시지")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
