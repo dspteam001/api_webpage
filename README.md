@@ -52,18 +52,13 @@ Postman이나 Insomnia처럼 API를 쉽게 테스트할 수 있는 웹 애플리
 ### 메인 화면
 애플리케이션의 메인 인터페이스입니다. 왼쪽에서 API 요청을 작성하고, 오른쪽에서 히스토리를 확인할 수 있습니다.
 
-> **주요 구성 요소:**
-> - 🔵 상단: 그라데이션 헤더 (보라색 → 분홍색)
-> - 🟢 왼쪽: Request 패널 (URL, Headers, Body 입력)
-> - 🟡 중앙: Response 섹션 (Status, Time, Size, Body)
-> - 🔴 오른쪽: History 패널 (과거 요청 목록)
-
 ### 응답 화면
 API 요청 후 응답이 표시됩니다:
 - **Status Code**: 색상으로 구분 (200=녹색, 400=주황, 500=빨강)
 - **Response Time**: 응답 속도를 ms 단위로 표시
 - **Response Size**: 바이트 단위 크기
 - **Response Body**: JSON 자동 포맷팅, 다크 테마 코드 뷰어
+<img width="1196" height="749" alt="image" src="https://github.com/user-attachments/assets/45ea2a8f-34f8-4dea-8782-48ceeb67a781" />
 
 ---
 
