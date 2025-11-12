@@ -20,7 +20,7 @@ Postman이나 Insomnia처럼 API를 쉽게 테스트할 수 있는 웹 애플리
 <tr>
 <td width="50%">
 
-### 🎯 완벽한 HTTP 지원
+### 🎯 HTTP 지원
 - ✅ GET, POST, PUT, DELETE, PATCH 메서드
 - ✅ 커스텀 헤더 설정 (JSON 형식)
 - ✅ Request Body 입력 지원
@@ -29,7 +29,7 @@ Postman이나 Insomnia처럼 API를 쉽게 테스트할 수 있는 웹 애플리
 </td>
 <td width="50%">
 
-### 📊 강력한 모니터링
+### 📊 모니터링
 - ⚡ 응답 시간 측정 (ms 단위)
 - 📦 응답 크기 표시
 - 🎨 Status Code 색상 구분
@@ -38,12 +38,6 @@ Postman이나 Insomnia처럼 API를 쉽게 테스트할 수 있는 웹 애플리
 </td>
 </tr>
 </table>
-
-### 🎨 모던한 UI/UX
-- 깔끔하고 직관적인 인터페이스
-- 다크 모드 코드 에디터
-- 반응형 디자인
-- 원클릭 예제 로드
 
 ---
 
