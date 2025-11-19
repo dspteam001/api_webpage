@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: api-tester-db
+    environment:
+      POSTGRES_USER: apiuser
+      POSTGRES_PASSWORD: apipass
+      POSTGRES_DB: apitester
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U apiuser -d apitester"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - api-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: api-tester-backend
+    environment:
+      DATABASE_URL: postgresql://apiuser:apipass@db:5432/apitester
+    expose:
+      - "8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - api-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: api-tester-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - api-network
+
+volumes:
+  postgres_data:
+
+networks:
+  api-network:
+    driver: bridge
