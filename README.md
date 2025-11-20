@@ -248,6 +248,44 @@ run.bat
 
 스크립트 없이 Docker Compose 명령어를 직접 사용하려면:
 
+#### ⚠️ 첫 실행 시 주의사항
+
+로컬 개발 환경에서 처음 실행하기 전에 다음을 확인하세요:
+
+**1. Frontend package-lock.json 생성**
+```bash
+cd frontend
+npm install
+cd ..
+```
+
+**2. Backend .env 설정 확인**
+```bash
+# backend/.env 파일에서 CORS_ORIGINS 형식 확인
+# ❌ 잘못된 형식: CORS_ORIGINS=http://localhost:3000,http://localhost:5173
+# ✅ 올바른 형식: CORS_ORIGINS=["http://localhost", "http://localhost:3000", "http://localhost:5173"]
+```
+
+`backend/.env` 올바른 설정 예시:
+```env
+DATABASE_URL=postgresql://llmuser:llmpass@postgres:5432/llmdb
+CORS_ORIGINS=["http://localhost", "http://localhost:3000", "http://localhost:5173"]
+```
+
+**3. Nginx 설정 (로컬 개발용)**
+
+로컬 환경에서는 SSL 없이 HTTP만 사용하도록 `nginx/conf.d/default.conf` 수정:
+```nginx
+# HTTP Server - Development mode (no SSL)
+server {
+    listen 80;
+    server_name localhost;
+    # ... 나머지 설정
+}
+```
+
+#### 🚀 서비스 실행
+
 ```bash
 # 모든 서비스 빌드 및 실행
 docker compose up -d --build
@@ -461,17 +499,31 @@ EMAIL=admin@example.com
 VITE_API_URL=https://example.com/api
 ```
 
-### 🚀 Backend `.env` (개발 환경)
+### 🚀 Backend `.env`
 
+**로컬 개발 환경** (직접 실행 시):
 ```env
 DATABASE_URL=postgresql://llmuser:llmpass@localhost:5432/llmdb
 APP_NAME=LLM API WebApp
 DEBUG=True
 API_VERSION=v1
-CORS_ORIGINS=http://localhost:3000,http://localhost:5173
+CORS_ORIGINS=["http://localhost:3000", "http://localhost:5173"]
 UPLOAD_DIR=./uploads
 MAX_UPLOAD_SIZE=10485760
 ```
+
+**Docker 환경** (컨테이너에서 실행 시):
+```env
+DATABASE_URL=postgresql://llmuser:llmpass@postgres:5432/llmdb
+APP_NAME=LLM API WebApp
+DEBUG=True
+API_VERSION=v1
+CORS_ORIGINS=["http://localhost", "http://localhost:3000", "http://localhost:5173"]
+UPLOAD_DIR=./uploads
+MAX_UPLOAD_SIZE=10485760
+```
+
+> ⚠️ **중요**: `CORS_ORIGINS`는 JSON 배열 형식으로 작성해야 합니다. 콤마로 구분된 문자열이 아닙니다!
 
 ### ⚛️ Frontend `.env` (개발 환경)
 
@@ -598,6 +650,59 @@ alembic history
 ---
 
 ## 🔧 문제 해결
+
+### ❌ Backend 시작 실패 (CORS_ORIGINS 오류)
+
+**증상**: Backend 컨테이너가 시작되지 않고 `error parsing value for field "cors_origins"` 오류 발생
+
+**해결**:
+```bash
+# backend/.env 파일의 CORS_ORIGINS 형식 확인
+# ❌ 잘못된 형식
+CORS_ORIGINS=http://localhost:3000,http://localhost:5173
+
+# ✅ 올바른 형식 (JSON 배열)
+CORS_ORIGINS=["http://localhost", "http://localhost:3000", "http://localhost:5173"]
+```
+
+### 🔨 Frontend 빌드 실패 (package-lock.json 누락)
+
+**증상**: `npm ci` 명령 실패, "package-lock.json not found" 오류
+
+**해결**:
+```bash
+cd frontend
+npm install  # package-lock.json 생성
+cd ..
+docker compose up -d --build
+```
+
+### 🔒 Nginx SSL 오류 (로컬 개발)
+
+**증상**: Nginx가 계속 재시작되며 SSL 인증서 파일을 찾을 수 없다는 오류 발생
+
+**해결**: `nginx/conf.d/default.conf`를 로컬 개발용으로 수정
+```nginx
+# HTTP Server - Development mode (no SSL)
+server {
+    listen 80;
+    server_name localhost;
+
+    client_max_body_size 10M;
+
+    # Backend API
+    location /api {
+        proxy_pass http://backend:8000;
+        # ... 나머지 프록시 설정
+    }
+
+    # Frontend
+    location / {
+        proxy_pass http://frontend:80;
+        # ... 나머지 프록시 설정
+    }
+}
+```
 
 ### 🐘 데이터베이스 연결 오류
 

@@ -41,6 +41,7 @@ services:
     container_name: llm_backend
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-llmuser}:${POSTGRES_PASSWORD:-llmpass}@postgres:5432/${POSTGRES_DB:-llmdb}
+      CORS_ORIGINS: '["http://localhost", "http://localhost:3000", "http://localhost:5173"]'
     volumes:
       - ./backend:/app
       - ./logs:/app/logs
